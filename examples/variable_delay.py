@@ -1,7 +1,7 @@
 """ DDE where the delay depends on Y(t). """
 
 from pylab import cos, linspace, subplots
-from ddeint import ddeint
+from ddesolver import solve_dde
 
 
 def model(Y, t):
@@ -13,7 +13,7 @@ def values_before_zero(t):
 
 
 tt = linspace(0, 30, 2000)
-yy = ddeint(model, values_before_zero, tt)
+yy = solve_dde(model, values_before_zero, tt)
 
 fig, ax = subplots(1, figsize=(4, 4))
 ax.plot(tt, yy)

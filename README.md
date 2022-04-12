@@ -1,4 +1,4 @@
-# ddeint
+# DDEsolver
 
 [![Build Status](https://travis-ci.org/Zulko/ddeint.svg?branch=master)](https://travis-ci.org/Zulko/ddeint)
 
@@ -9,7 +9,7 @@ Scipy-based delay differential equation (DDE) solver. See the docstrings and exa
 
 ```python
 from pylab import cos, linspace, subplots
-from ddeint import ddeint
+from ddesolver import solve_dde
 
 # We solve the following system:
 # Y(t) = 1 for t < 0
@@ -22,18 +22,18 @@ def model(Y, t):
     return -Y(t - 3 * cos(Y(t)) ** 2)
 
 tt = linspace(0, 30, 2000)
-yy = ddeint(model, values_before_zero, tt)
+yy = solve_dde(model, values_before_zero, tt)
 
 fig, ax = subplots(1, figsize=(4, 4))
 ax.plot(tt, yy)
 ax.figure.savefig("variable_delay.jpeg")
 ```
 
-![screenshot](https://github.com/Zulko/ddeint/raw/master/examples/variable_delay.jpeg)
+![screenshot](./examples/variable_delay.jpeg)
 
 ```python
 from pylab import array, linspace, subplots
-from ddeint import ddeint
+from ddesolver import solve_dde
 
 # We solve the following system:
 # X(t) = 1 (t < 0)
@@ -55,14 +55,14 @@ fig, ax = subplots(1, figsize=(4, 4))
 
 for d in [0, 0.2]:
     print("Computing for d=%.02f" % d)
-    yy = ddeint(model, g, tt, fargs=(d,))
+    yy = solve_dde(model, g, tt, fargs=(d,))
     # WE PLOT X AGAINST Y
     ax.plot(yy[:, 0], yy[:, 1], lw=2, label="delay = %.01f" % d)
 
 ax.figure.savefig("lotka.jpeg")
 ```
 
-![screenshot](https://github.com/Zulko/ddeint/raw/master/examples/lotka.jpeg)
+![screenshot](./examples/lotka.jpeg)
 
 ## Licence
 
@@ -71,10 +71,13 @@ Public domain. Everyone is welcome to contribute !
 
 ## Installation
 
-ddeint can be installed by unzipping the source code in one directory and using this command: ::
+ddesolver can be installed by unzipping the source code in one directory and using this command: ::
 
     (sudo) python setup.py install
 
-You can also install it directly from the Python Package Index with this command: ::
+
+### Installation of the original repository provided by Zulko
+
+You can also install the original ddeint package directly from the Python Package Index with this command: ::
 
     (sudo) pip install ddeint 

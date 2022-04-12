@@ -1,7 +1,7 @@
 """ Lotka volterra DDE """
 
 from pylab import array, linspace, subplots
-from ddeint import ddeint
+from ddesolver import solve_dde
 
 
 def model(Y, t, d):
@@ -17,7 +17,7 @@ fig, ax = subplots(1, figsize=(4, 4))
 
 for d in [0, 0.2]:
     print("Computing for d=%.02f" % d)
-    yy = ddeint(model, g, tt, fargs=(d,))
+    yy = solve_dde(model, g, tt, fargs=(d,))
     # WE PLOT X AGAINST Y
     ax.plot(yy[:, 0], yy[:, 1], lw=2, label="delay = %.01f" % d)
 

@@ -1,6 +1,9 @@
 """
-This module implements ddeint, a simple Differential Delay Equation
-solver built on top of Scipy's odeint """
+This module implements ddesolver, a simple Differential Delay Equation
+solver built on top of Scipy's odeint.
+
+It has been expanded to support different ode backends provided by scipy.
+"""
 
 # REQUIRES Numpy and Scipy.
 import numpy as np
@@ -14,21 +17,27 @@ class ddeVar:
     variables which store their past values in an interpolator and
     can be called for any past time: Y(t), Y(t-d).
     Very convenient for the integration of DDEs.
+    
+    Initial values for the variable prior to an initial cutoff time 
+    are provided by the generator function.
+    
+    By default, the cutoff between the generator and the simulated 
+    instances of the variable is set to t=0.
     """
 
-    def __init__(self, g, tc=0):
-        """ g(t) = expression of Y(t) for t<tc """
+    def __init__(self, generator, generator_cutoff_time=0):
+        """ generator(t) = expression of Y(t) for t<generator_cutoff_time """
 
-        self.g = g
-        self.tc = tc
+        self.generator = generator
+        self.generator_cutoff_time = generator_cutoff_time
         # We must fill the interpolator with 2 points minimum
 
         self.interpolator = scipy.interpolate.interp1d(
-            np.array([tc - 1, tc]),  # X
-            np.array([self.g(tc), self.g(tc)]).T,  # Y
+            np.array([generator_cutoff_time - 1, generator_cutoff_time]),  # X
+            np.array([self.generator(generator_cutoff_time), self.generator(generator_cutoff_time)]).T,  # Y
             kind="linear",
             bounds_error=False,
-            fill_value=self.g(tc)
+            fill_value=self.generator(generator_cutoff_time)
         )
 
     def update(self, t, Y):
@@ -45,7 +54,7 @@ class ddeVar:
     def __call__(self, t=0):
         """ Y(t) will return the instance's value at time t """
 
-        return self.g(t) if (t <= self.tc) else self.interpolator(t)
+        return self.generator(t) if (t <= self.generator_cutoff_time) else self.interpolator(t)
 
 
 class dde(scipy.integrate.ode):
@@ -74,13 +83,13 @@ class dde(scipy.integrate.ode):
         scipy.integrate.ode.set_initial_value(self, Y(Y.tc), Y.tc)
 
 
-def ddeint(func, g, tt, fargs=None):
-    """ Solves Delay Differential Equations
+def solve_dde(func, generator, tt, fargs=None):
+    """ Solves Delayed Differential Equations
 
-    Similar to scipy.integrate.odeint. Solves a Delay differential
+    Similar to scipy.integrate.odeint. Solves a Delayed differential
     Equation system (DDE) defined by
 
-        Y(t) = g(t) for t<0
+        Y(t) = generator(t) for t<0
         Y'(t) = func(Y,t) for t>= 0
 
     Where func can involve past values of Y, like Y(t-d).
@@ -95,8 +104,8 @@ def ddeint(func, g, tt, fargs=None):
       it is called like a function: Y(t), Y(t-d), etc. Y(t) returns
       either a number or a numpy array (for multivariate systems).
 
-    g
-      The 'history function'. A function g(t)=Y(t) for t<0, g(t)
+    generator
+      The 'history function'. A function generator(t)=Y(t) for t<0, generator(t)
       returns either a number or a numpy array (for multivariate
       systems).
     
@@ -124,22 +133,22 @@ def ddeint(func, g, tt, fargs=None):
     The delay ``d`` is a tunable parameter of the model.
 
     >>> import numpy as np
-    >>> from ddeint import ddeint
+    >>> from ddesolver import solve_dde
     >>> 
     >>> def model(XY,t,d):
     >>>     x, y = XY(t)
     >>>     xd, yd = XY(t-d)
     >>>     return np.array([0.5*x*(1-yd), -0.5*y*(1-xd)])
     >>> 
-    >>> g = lambda t : np.array([1+t,2-t]) # 'history' at t<0
+    >>> generator = lambda t : np.array([1+t,2-t]) # 'history' at t<0
     >>> tt = np.linspace(0,30,20000) # times for integration
     >>> d = 0.5 # set parameter d 
-    >>> yy = ddeint(model,g,tt,fargs=(d,)) # solve the DDE !
+    >>> yy = solve_dde(model,generator,tt,fargs=(d,)) # solve the DDE !
      
     """
 
     dde_ = dde(func)
-    dde_.set_initial_value(ddeVar(g, tt[0]))
+    dde_.set_initial_value(ddeVar(generator, tt[0]))
     dde_.set_f_params(fargs if fargs else [])
     results = [dde_.integrate(dde_.t + dt) for dt in np.diff(tt)]
-    return np.array([g(tt[0])] + results)
+    return np.array([generator(tt[0])] + results)
