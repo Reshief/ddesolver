@@ -143,8 +143,8 @@ def solve_dde(func, generator, tt, fargs=None, integrator="dopri5", **integrator
     dde_.set_integrator(integrator, **integrator_params)
 
     # Setup result array
-    results = np.zeros_like(tt)
-    results[0] = generator(tt[0])
+    results = []
+    results.append(generator(tt[0]))
 
     # Calculate necessary simulation time steps
     t_diffs = np.diff(tt)
@@ -152,6 +152,6 @@ def solve_dde(func, generator, tt, fargs=None, integrator="dopri5", **integrator
     # Execute DDE integration
     for step_index in range(len(t_diffs)):
         dt = t_diffs[step_index]
-        results[step_index+1] = dde_.integrate(dde_.t + dt)
+        results.append(dde_.integrate(dde_.t + dt))
 
-    return results
+    return np.array(results)
