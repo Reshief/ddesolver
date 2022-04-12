@@ -7,7 +7,7 @@ install:
   - pip install -e .
 # command to run tests
 script:
-  - python -m pytest -v --cov ddeint --cov-report term-missing
+  - python -m pytest -v --cov ddesolver --cov-report term-missing
 
 after_success:
   - coveralls
