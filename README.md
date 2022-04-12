@@ -1,6 +1,6 @@
 # DDEsolver
 
-[![Build Status](https://travis-ci.org/Zulko/ddeint.svg?branch=master)](https://travis-ci.org/Zulko/ddeint)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Scipy-based delay differential equation (DDE) solver. See the docstrings and examples for more infos.
 
@@ -66,8 +66,7 @@ ax.figure.savefig("lotka.jpeg")
 
 ## Licence
 
-
-Public domain. Everyone is welcome to contribute !
+Licensed under the MIT license, see `LICENSE` file for the detailed license text.
 
 ## Installation
 
