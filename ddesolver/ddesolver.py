@@ -17,10 +17,10 @@ class ddeVar:
     variables which store their past values in an interpolator and
     can be called for any past time: Y(t), Y(t-d).
     Very convenient for the integration of DDEs.
-    
+
     Initial values for the variable prior to an initial cutoff time 
     are provided by the generator function.
-    
+
     By default, the cutoff between the generator and the simulated 
     instances of the variable is set to t=0.
     """
@@ -34,7 +34,8 @@ class ddeVar:
 
         self.interpolator = scipy.interpolate.interp1d(
             np.array([generator_cutoff_time - 1, generator_cutoff_time]),  # X
-            np.array([self.generator(generator_cutoff_time), self.generator(generator_cutoff_time)]).T,  # Y
+            np.array([self.generator(generator_cutoff_time),
+                      self.generator(generator_cutoff_time)]).T,  # Y
             kind="linear",
             bounds_error=False,
             fill_value=self.generator(generator_cutoff_time)
@@ -79,8 +80,9 @@ class dde(scipy.integrate.ode):
 
     def set_initial_value(self, Y):
 
-        self.Y = Y  #!!! Y will be modified during integration
-        scipy.integrate.ode.set_initial_value(self, Y(Y.generator_cutoff_time), Y.generator_cutoff_time)
+        self.Y = Y  # !!! Y will be modified during integration
+        scipy.integrate.ode.set_initial_value(
+            self, Y(Y.generator_cutoff_time), Y.generator_cutoff_time)
 
 
 def solve_dde(func, generator, tt, fargs=None):
@@ -93,11 +95,11 @@ def solve_dde(func, generator, tt, fargs=None):
         Y'(t) = func(Y,t) for t>= 0
 
     Where func can involve past values of Y, like Y(t-d).
-    
+
 
     Parameters
     -----------
-    
+
     func
       a function Y,t,args -> Y'(t), where args is optional.
       The variable Y is an instance of class ddeVar, which means that
@@ -108,7 +110,7 @@ def solve_dde(func, generator, tt, fargs=None):
       The 'history function'. A function generator(t)=Y(t) for t<0, generator(t)
       returns either a number or a numpy array (for multivariate
       systems).
-    
+
     tt
       The vector of times [t0, t1, ...] at which the system must
       be solved.
