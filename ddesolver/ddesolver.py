@@ -85,7 +85,7 @@ class dde(scipy.integrate.ode):
             self, Y(Y.generator_cutoff_time), Y.generator_cutoff_time)
 
 
-def solve_dde(func, generator, tt, fargs=None):
+def solve_dde(func, generator, tt, fargs=None, integrator="dopri5", **integrator_params):
     """ Solves Delayed Differential Equations
 
     Similar to scipy.integrate.odeint. Solves a Delayed differential
@@ -118,10 +118,40 @@ def solve_dde(func, generator, tt, fargs=None):
     fargs
       Additional arguments to be passed to parameter ``func``, if any.
 
+    integrator
+      Name of the integrator to be used. The total list of available integrators with 
+      explanations can be found at: 
+      https://docs.scipy.org/doc/scipy/reference/generated/scipy.integrate.ode.html
+      The available options are:
+        - dopri5: A Runge-Kutta 5(4) integrator
+        - dop853: An explicit runge-kutta method of order 8(5,3) 
+        - lsoda: Real-valued Variable-coefficient Ordinary Differential Equation solver
+        - zvode: Complex-valued Variable-coefficient Ordinary Differential Equation solver, with fixed-leading-coefficient implementation.
+        - vode: Real-valued Variable-coefficient Ordinary Differential Equation solver, with fixed-leading-coefficient implementation.
+      By default, dopri5 will be used for integration to increase accuracy
+
+    integrator_params
+      Can be used to pass integrator parameters to the chosen integrator
+
     """
 
+    # Configure the custom DDE integrator
     dde_ = dde(func)
     dde_.set_initial_value(ddeVar(generator, tt[0]))
     dde_.set_f_params(fargs if fargs else [])
-    results = [dde_.integrate(dde_.t + dt) for dt in np.diff(tt)]
-    return np.array([generator(tt[0])] + results)
+
+    dde_.set_integrator(integrator, **integrator_params)
+
+    # Setup result array
+    results = np.zeros_like(tt)
+    results[0] = generator(tt[0])
+
+    # Calculate necessary simulation time steps
+    t_diffs = np.diff(tt)
+
+    # Execute DDE integration
+    for step_index in range(len(t_diffs)):
+        dt = t_diffs[step_index]
+        results[step_index+1] = dde_.integrate(dde_.t + dt)
+
+    return results
