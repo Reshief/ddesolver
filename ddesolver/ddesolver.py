@@ -80,7 +80,7 @@ class dde(scipy.integrate.ode):
     def set_initial_value(self, Y):
 
         self.Y = Y  #!!! Y will be modified during integration
-        scipy.integrate.ode.set_initial_value(self, Y(Y.tc), Y.tc)
+        scipy.integrate.ode.set_initial_value(self, Y(Y.generator_cutoff_time), Y.generator_cutoff_time)
 
 
 def solve_dde(func, generator, tt, fargs=None):
