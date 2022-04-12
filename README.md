@@ -70,13 +70,16 @@ Licensed under the MIT license, see `LICENSE` file for the detailed license text
 
 ## Installation
 
-ddesolver can be installed by unzipping the source code in one directory and using this command: ::
-
-    (sudo) python setup.py install
+ddesolver can be installed by unzipping the source code in one directory, installing setuptools using pip and then running setup.py: ::
+```
+    (sudo) python3 -m pip install --upgrade pip setuptools
+    (sudo) python3 setup.py install
+```
 
 
 ### Installation of the original repository provided by Zulko
 
 You can also install the original ddeint package directly from the Python Package Index with this command: ::
-
+```
     (sudo) pip install ddeint 
+```
