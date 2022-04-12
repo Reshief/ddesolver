@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-exec(open("deesolver/version.py").read())  # loads __version__
+exec(open("ddesolver/version.py").read())  # loads __version__
 
 setup(
     name="deesolver",
