@@ -6,6 +6,7 @@ setup(
     name="deesolver",
     version=__version__,
     author="Reshief",
+    author_email='reshief@gmx.net',
     description="Scipy-based Delayed Differential Equations (DDE) solver based on the DDEint implementation by Zulko",
     long_description=open("README.md").read(),
     license="see LICENSE.txt",
