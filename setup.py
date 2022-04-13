@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 exec(open("ddesolver/version.py").read())  # loads __version__
 
 setup(
-    name="deesolver",
+    name="ddesolver",
     version=__version__,
     author="Reshief",
     author_email='reshief@gmx.net',
